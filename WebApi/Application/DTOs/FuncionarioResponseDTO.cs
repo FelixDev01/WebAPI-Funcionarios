@@ -1,13 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using WebApi.Domain.Enums;
+﻿using WebApi.Domain.Enums;
 
-namespace WebApi.Domain.Entities
+namespace WebApi.Application.DTOs
 {
-    public class FuncionarioModel
+    public class FuncionarioResponseDTO
     {
-        [Key]
         public int Id { get; set; }
-        public string Nome{ get; set; }
+        public string Nome { get; set; }
         public string Sobrenome { get; set; }
         public DepartamentoEnum Departamento { get; set; }
         public int Ativo { get; set; }
