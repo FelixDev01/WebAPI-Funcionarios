@@ -29,17 +29,7 @@ namespace WebApi.Application.Service
             _context.Add(funcionario);
             await _context.SaveChangesAsync();
 
-            return new FuncionarioResponseDTO
-            {
-                Id = funcionario.Id,
-                Nome = funcionario.Nome,
-                Sobrenome = funcionario.Sobrenome,
-                Departamento = funcionario.Departamento,
-                Turno = funcionario.Turno,
-                Ativo = funcionario.Ativo,
-                DataCriacao = funcionario.DataCriacao,
-                DataAlteracao = funcionario.DataAlteracao
-            };
+            return MapToResponse(funcionario);
         }
     
         public async Task<IEnumerable<FuncionarioResponseDTO>> BuscarTodos()
@@ -60,62 +50,55 @@ namespace WebApi.Application.Service
 
         public async Task<FuncionarioResponseDTO> BuscarPorId(int id)
         {
-            var funcionario = _context.Funcionarios.FirstOrDefault(f => f.Id == id);
-            
-            if (funcionario == null)
-                return null;
+            var funcionario = await _context.Funcionarios.FirstOrDefaultAsync(f => f.Id == id);
 
-            return new FuncionarioResponseDTO
-            {
-                Id = funcionario.Id,
-                Nome = funcionario.Nome,
-                Sobrenome = funcionario.Sobrenome,
-                Departamento = funcionario.Departamento,
-                Turno = funcionario.Turno,
-                Ativo = funcionario.Ativo,
-                DataCriacao = funcionario.DataCriacao,
-                DataAlteracao = funcionario.DataAlteracao
-            };
+            if (funcionario == null)
+                throw new KeyNotFoundException("Funcionário não encontrado");
+
+            return MapToResponse(funcionario);
         }
-        public async Task<FuncionarioResponseDTO> Atualizar(int id, FuncionarioRequestDTO funcionarioAtualizado)
+        public async Task<FuncionarioResponseDTO> Atualizar(int id, FuncionarioUpdateDTO funcionarioAtualizado)
         {
-            var funcionario = _context.Funcionarios.FirstOrDefault(f => f.Id == id);
-            
-            if (funcionario == null)
-                return null;
+            var funcionario = await _context.Funcionarios.FirstOrDefaultAsync(f => f.Id == id);
 
-            funcionario.Nome = funcionarioAtualizado.Nome;
-            funcionario.Sobrenome = funcionarioAtualizado.Sobrenome;
+            if (funcionario == null)
+                throw new KeyNotFoundException("Funcionário não encontrado");
+
             funcionario.Departamento = funcionarioAtualizado.Departamento;
-            funcionario.Turno = funcionarioAtualizado.Turno;
-            funcionario.DataAlteracao = DateTime.Now.ToLocalTime();      
-        
+            funcionario.Turno = funcionarioAtualizado.Turno;   
+            funcionario.DataAlteracao = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
-            return new FuncionarioResponseDTO
-            {
-                Id = funcionario.Id,
-                Nome = funcionario.Nome,
-                Sobrenome = funcionario.Sobrenome,
-                Departamento = funcionario.Departamento,
-                Turno = funcionario.Turno,
-                Ativo = funcionario.Ativo,
-                DataCriacao = funcionario.DataCriacao,
-                DataAlteracao = funcionario.DataAlteracao
-            };
+            return MapToResponse(funcionario);
         }
 
         public async Task<bool> Inativar(int id)
         {
-            var funcionario = _context.Funcionarios.FirstOrDefault(f => f.Id == id);
+            var funcionario = await _context.Funcionarios.FirstOrDefaultAsync(f => f.Id == id);
 
             if (funcionario == null)
                 return false;
 
             funcionario.Ativo = 0;
-            funcionario.DataAlteracao = DateTime.Now.ToLocalTime();
+            funcionario.DataAlteracao = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        private static FuncionarioResponseDTO MapToResponse(FuncionarioModel funcionario)
+        {
+            return new FuncionarioResponseDTO
+            {
+                Id = funcionario.Id,
+                Nome = funcionario.Nome,
+                Sobrenome = funcionario.Sobrenome,
+                Departamento = funcionario.Departamento,
+                Turno = funcionario.Turno,
+                Ativo = funcionario.Ativo,
+                DataCriacao = funcionario.DataCriacao,
+                DataAlteracao = funcionario.DataAlteracao
+            };
         }
     }
 }
