@@ -4,7 +4,7 @@ Esta é uma Web API robusta desenvolvida em **.NET 10** para o gerenciamento de 
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Runtime:** .NET 9
+* **Runtime:** .NET 10
 * **Linguagem:** C#
 * **Banco de Dados:** SQL Server
 * **ORM:** Entity Framework Core (com Migrations)
